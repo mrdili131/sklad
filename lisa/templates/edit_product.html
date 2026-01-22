@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sklad | Mahsulotni tahrirlash</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif}
+body{background:#f4f6f8}
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+    width:260px;
+    background:#1e293b;
+    color:#fff;
+    padding:25px;
+}
+.sidebar nav{display:flex;flex-direction:column;gap:15px}
+.sidebar a{
+    color:#cbd5e1;
+    text-decoration:none;
+    padding:10px 15px;
+    border-radius:10px;
+}
+.sidebar a:hover{background:#334155;color:#fff}
+
+/* CONTENT */
+.content{flex:1;padding:40px}
+h1{margin-bottom:20px}
+
+/* FORM */
+.edit-form{
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    max-width:520px;
+}
+.edit-form label{
+    display:block;
+    margin:14px 0 6px;
+    font-weight:600;
+}
+.edit-form input,
+.edit-form select,
+.edit-form textarea{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+    resize:none;
+}
+.edit-form textarea{
+    min-height:90px;
+}
+.edit-form button{
+    margin-top:20px;
+    padding:12px;
+    width:100%;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+}
+
+/* ALERT */
+.alert{padding:12px;border-radius:10px;margin-bottom:15px}
+.alert.success{background:#dcfce7;color:#166534}
+.alert.error{background:#fee2e2;color:#7f1d1d}
+
+/* MOBILE */
+@media(max-width:768px){
+    .sidebar{width:70px;padding:15px 8px}
+    .content{padding:20px 15px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    {% include 'navbar.html' %}
+
+    <main class="content">
+        <h1>Mahsulotni tahrirlash</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="edit-form">
+            {% csrf_token %}
+
+            <label>Mahsulot nomi</label>
+            <input type="text" name="name" value="{{ product.name }}" required>
+
+            <label>Narxi</label>
+            <input type="number" name="price" value="{{ product.price }}" required>
+
+            <label>Miqdor</label>
+            <input type="number" name="quantity" value="{{ product.quantity }}" required>
+
+            <label>Turi</label>
+            <select name="p_type" required>
+                <option value="">Tanlang</option>
+                <option value="dona" {% if product.p_type == "dona" %}selected{% endif %}>Dona</option>
+                <option value="kg" {% if product.p_type == "kg" %}selected{% endif %}>Kg</option>
+                <option value="litr" {% if product.p_type == "litr" %}selected{% endif %}>Litr</option>
+            </select>
+
+            <label>Izoh</label>
+            <textarea name="comment" placeholder="Qo‘shimcha ma’lumot">{{ product.comment }}</textarea>
+
+            <button type="submit">Saqlash</button>
+        </form>
+
+    </main>
+</div>
+
+</body>
+</html>
