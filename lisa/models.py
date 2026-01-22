@@ -12,7 +12,7 @@ p_type = [
 class Product(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=100)
-    price = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=10,decimal_places=0,default=0)
     quantity = models.FloatField(default=1)
     p_type = models.CharField(choices=p_type,default='dona',max_length=50)
     comment = models.TextField(null=True,blank=True)
@@ -26,17 +26,22 @@ class Product(models.Model):
 
 class Order(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='sold_items')
-    filial = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='sold_orders')
+    filial = models.ForeignKey(Filial,on_delete=models.CASCADE)
+    total_price = models.DecimalField(max_digits=10,decimal_places=0,default=0)
+    sold_price = models.DecimalField(max_digits=10,decimal_places=0,default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.uuid)
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name="orders")
+    order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name="items")
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
-    filial = models.ForeignKey(User,on_delete=models.CASCADE)
+    total_price = models.DecimalField(max_digits=10,decimal_places=0,default=0)
+    sold_price = models.DecimalField(max_digits=10,decimal_places=0,default=0)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='order_items')
+    filial = models.ForeignKey(Filial,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
