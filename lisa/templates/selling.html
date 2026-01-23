@@ -41,13 +41,25 @@
                 <thead>
                     <tr>
                         <th>Mahsulot</th>
-                        <th>Narx</th>
+                        <th>Narxi</th>
                         <th>Soni</th>
+                        <th>Sanoq turi</th>
                         <th>Jami</th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody id="cartBody"></tbody>
+                <tbody id="cartBody">
+                    <!-- <tr>
+                        <td>iPhone 15</td>
+                        <td>12 000 000 so‘m</td>
+                        <td>1</td>
+                        <td>KG</td>
+                        <td>12 000 000 so‘m</td>
+                        <td>
+                            <button class="danger" onclick="removeRow(this)">✖</button>
+                        </td>
+                    </tr> -->
+                </tbody>
             </table>
             <div class="total">
                 Umumiy summa: <span id="grandTotal">0</span> so‘m
@@ -119,6 +131,8 @@ const select=document.getElementById("productSelect");
 const cartBody=document.getElementById("cartBody");
 const grandTotalEl=document.getElementById("grandTotal");
 const alertBox=document.getElementById("alert");
+const cart_container = document.getElementById("cartBody");
+let total = 0;
 
 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -136,6 +150,36 @@ document.getElementById("productSelect").addEventListener("change",function(){
     const price = opt.dataset.price;
     document.getElementById("price").value = `${Number(price).toLocaleString()} so‘m`;
 })
+
+function get_data(){
+    fetch('/api/cart/',{
+        method:"GET"
+    })
+        .then(response=>response.json())
+        .then(data=>{
+            console.log(data)
+            cart_container.innerHTML = '';
+            total = 0;
+            Object.values(data).forEach(i=>{
+                cart_container.innerHTML += `
+                    <tr>
+                        <td>${i.name}</td>
+                        <td>${Number(i.price).toLocaleString()} so‘m</td>
+                        <td>${i.quantity}</td>
+                        <td>${i.p_type}</td>
+                        <td>${Number(i.total_price).toLocaleString()} so‘m</td>
+                        <td>
+                            <button class="danger" onclick="del(${i.id})">✖</button>
+                        </td>
+                    </tr>
+                `
+                total = total + Number(i.total_price);
+
+            })
+                document.getElementById("grandTotal").textContent = Number(total).toLocaleString()
+            
+        })
+}
 
 function to_cart(){
     let selling_price = document.getElementById("selling_price").value
@@ -161,7 +205,24 @@ function to_cart(){
     })
     .then(response => response.json())
     .then(data => {
-        // console.log("Cart response:", data);
+        get_data()
     })
 }
+
+function del(id){
+    fetch(`/api/cart/`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+        },
+        body:JSON.stringify({
+            product_id:id
+        })
+    })
+    .then(() => get_data())
+}
+
+// Initializing
+get_data()
 </script>

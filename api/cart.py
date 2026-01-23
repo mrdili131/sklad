@@ -11,8 +11,9 @@ class Cart:
         if (int(quantity) > product.quantity):
             return
         self.cart[str(product_id)] = {
+            "id":str(product.id),
             "name":str(product.name),
-            "price":float(product.price),
+            "price":float(selling_price),
             "p_type":str(product.p_type),
             "quantity":str(quantity),
             "total_price":float(selling_price)*quantity

@@ -49,3 +49,10 @@ class CartAPI(APIView):
         else:
             return Response({"msg":"Error adding product into cart","status":False})
         
+    def delete(self,request):
+        cart = Cart(request)
+        product_id = str(request.data.get("product_id"))
+        cart.remove(product_id)
+        print(product_id)
+        return Response({"msg":"Cart is clean now","status":True})
+        
