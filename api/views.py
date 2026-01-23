@@ -3,6 +3,7 @@ from .serializers import ProductsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from lisa.models import Product
+from .cart import Cart
 
 class ProductsAPI(APIView):
     def get(self,request):
@@ -30,3 +31,21 @@ class ProductDetailAPI(APIView):
             return Response({"msg":"Could not find the product","status":False})
         product.delete()
         return Response({"msg":"Deleted successfully"})
+    
+
+class CartAPI(APIView):
+    def get(self,request):
+        cart = Cart(request).cart
+        return Response(cart)
+    
+    def post(self,request):
+        cart = Cart(request)
+        product_id = int(request.data.get("product_id"))
+        quantity = int(request.data.get("quantity"))
+        selling_price = float(request.data.get("selling_price"))
+        if (product_id and quantity and selling_price):
+            cart.add(product_id,quantity,selling_price)
+            return Response(cart.cart)
+        else:
+            return Response({"msg":"Error adding product into cart","status":False})
+        

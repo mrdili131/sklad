@@ -22,13 +22,15 @@
             <h3>Mahsulot qo‘shish</h3>
             <div class="row">
                 <select id="productSelect">
-                    <option value="">Mahsulot tanlang</option>
+                    <option value="" id="product_selection">Mahsulot tanlang</option>
                     {% for i in products %}
-                        <option value="{{i.id}}">{{i.name}}</option>
+                        <option value="{{i.id}}" data-price="{{i.price}}">{{i.name}}</option>
                     {% endfor %}
                 </select>
-                <input type="number" id="qty" placeholder="Soni">
-                <button onclick="addToCart()">➕</button>
+                <input type="number" value="1" id="quantity" placeholder="Soni">
+                <input type="text" id="price" placeholder="Narxi" disabled>
+                <input type="number" id="selling_price" placeholder="Sotuv narxi">
+                <button onclick="to_cart()">➕</button>
             </div>
         </div>
 
@@ -54,7 +56,7 @@
         </div>
     </main>
 </div>
-
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 </body>
 </html>
 
@@ -118,11 +120,48 @@ const cartBody=document.getElementById("cartBody");
 const grandTotalEl=document.getElementById("grandTotal");
 const alertBox=document.getElementById("alert");
 
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
 
 function showAlert(m,t){
     alertBox.textContent=m;
     alertBox.className=`alert ${t}`;
     alertBox.classList.remove("hidden");
     setTimeout(()=>alertBox.classList.add("hidden"),3000);
+}
+
+document.getElementById("productSelect").addEventListener("change",function(){
+    const product_cost = this.value;
+    const opt = this.options[this.selectedIndex]
+    const price = opt.dataset.price;
+    document.getElementById("price").value = `${Number(price).toLocaleString()} so‘m`;
+})
+
+function to_cart(){
+    let selling_price = document.getElementById("selling_price").value
+    let prod_id = document.getElementById("productSelect").value
+    let quantity = document.getElementById("quantity").value
+
+    if (!selling_price || !prod_id || !quantity){
+        alert("Bo‘sh kataklarni to‘ldiring !!!")
+        return
+    }
+
+    fetch("/api/cart/",{
+        method:"POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken
+        },
+        body:JSON.stringify({
+            product_id:prod_id,
+            quantity:quantity,
+            selling_price:selling_price
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // console.log("Cart response:", data);
+    })
 }
 </script>
