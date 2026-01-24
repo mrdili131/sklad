@@ -55,4 +55,12 @@ class CartAPI(APIView):
         cart.remove(product_id)
         print(product_id)
         return Response({"msg":"Cart is clean now","status":True})
+    
+class ToOrderAPI(APIView):
+    def get(self,request):
+        cart = Cart(request)
+        if len(cart.cart) == 0:
+            return Response({"msg":"Select items first","status":False})
+        cart.order()
+        return Response({"msg":"Success","status":True})
         

@@ -64,7 +64,7 @@
             <div class="total">
                 Umumiy summa: <span id="grandTotal">0</span> so‘m
             </div>
-            <button class="danger" onclick="submitChiqim()">➖ Chiqim qilish</button>
+            <button class="danger" onclick="order()">➖ Chiqim qilish</button>
         </div>
     </main>
 </div>
@@ -149,6 +149,7 @@ document.getElementById("productSelect").addEventListener("change",function(){
     const opt = this.options[this.selectedIndex]
     const price = opt.dataset.price;
     document.getElementById("price").value = `${Number(price).toLocaleString()} so‘m`;
+    document.getElementById("selling_price").value = Number(price);
 })
 
 function get_data(){
@@ -206,6 +207,7 @@ function to_cart(){
     .then(response => response.json())
     .then(data => {
         get_data()
+        showAlert("Ma‘lumotlar yangilandi","success")
     })
 }
 
@@ -220,9 +222,24 @@ function del(id){
             product_id:id
         })
     })
-    .then(() => get_data())
+    .then(() => {
+        get_data()
+        showAlert("Mahsulot o‘chirildi","success")
+    })
+}
+
+function order(){
+    fetch('/api/order/',{
+        method:"GET"
+    })
+    .then(response=>response.json())
+    .then(data=>{
+        get_data()
+        showAlert("Sotildi","success")
+    })
 }
 
 // Initializing
 get_data()
+showAlert("Ma‘lumotlar yangilandi","success")
 </script>

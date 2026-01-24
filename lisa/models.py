@@ -13,6 +13,7 @@ class Product(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10,decimal_places=0,default=0)
+    interest = models.IntegerField(default=0)
     quantity = models.FloatField(default=1)
     p_type = models.CharField(choices=p_type,default='dona',max_length=50)
     comment = models.TextField(null=True,blank=True)
