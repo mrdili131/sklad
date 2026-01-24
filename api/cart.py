@@ -45,11 +45,14 @@ class Cart:
                 product = product,
                 total_price = float(value["price"])*float(value["quantity"]),
                 sold_price = float(value["total_price"]),
+                quantity = int(value["quantity"]),
                 user = self.request.user,
                 filial = self.request.user.filial
             )
             total_price += product.price * int(value["quantity"])
             sold_price += float(value["total_price"])
+            product.quantity -= int(value["quantity"])
+            product.save()
             
         order.total_price = total_price
         order.sold_price = sold_price

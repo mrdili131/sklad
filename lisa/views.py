@@ -5,6 +5,7 @@ from .forms import ProductForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from datetime import datetime
+from django.db.models import Sum
 
 class IndexView(LoginRequiredMixin,View):
     def get(self,request):
@@ -16,6 +17,7 @@ class IndexView(LoginRequiredMixin,View):
         if form.is_valid():
             product = form.save(commit=False)
             product.filial = request.user.filial
+            product.income = float(form.cleaned_data["price"])/100*float(form.cleaned_data["interest"])
             product.price = float(form.cleaned_data["price"])+(float(form.cleaned_data["price"])/100*int(form.cleaned_data["interest"]))
             product.save()
             return redirect('home')
@@ -60,7 +62,35 @@ class ReportView(LoginRequiredMixin,View):
             start_date_valid = timezone.now().date()
             end_date_valid = timezone.now().date()
 
-        orders = Order.objects.filter(
-            created_at__range=(start_date_valid,end_date_valid))
+        orders = Order.objects.filter(created_at__range=(start_date_valid,end_date_valid))
+        products_all = Product.objects.filter(filial=request.user.filial,is_available=True)
+        filtered_products = products_all.filter(created_at__range=(start_date_valid,end_date_valid))
 
-        return render(request,'report.html')
+
+        kirim = 0
+        chiqim = 0
+        foida = 0
+
+        product_in = 0
+        product_out = 0
+
+
+        for prod in filtered_products:
+            kirim += prod.price * int(prod.quantity)
+
+        for order in orders:
+            for i in order.items.all():
+                chiqim += i.product.price * i.quantity
+                foida += (i.sold_price - i.total_price)+i.product.income
+
+
+        data = {
+            "out":chiqim,
+            "in":kirim,
+            "income":foida,
+
+            "start_date":start_date,
+            "end_date":end_date
+        }
+
+        return render(request,'report.html',context=data)

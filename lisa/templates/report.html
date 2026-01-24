@@ -1,3 +1,4 @@
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -19,36 +20,36 @@
         <div id="alert" class="alert hidden"></div>
 
         <!-- FILTER -->
-        <div class="card no-print">
+        <form class="card no-print" method="get">
             <div class="row">
                 <div>
                     <label>Boshlanish sana</label>
-                    <input type="date" id="start">
+                    <input type="date" name="start_date" value="{{start_date}}" id="start">
                 </div>
                 <div>
                     <label>Tugash sana</label>
-                    <input type="date" id="end">
+                    <input type="date" name="end_date" value="{{end_date}}" id="end">
                 </div>
-                <button onclick="filterData()">🔍 Ko‘rsatish</button>
+                <button type="submit">🔍 Ko‘rsatish</button>
                 <button class="print" onclick="window.print()">🖨 Chop etish</button>
             </div>
-        </div>
+        </form>
 
         <!-- TOTALS -->
         <div class="totals">
             <div class="total-card in">
                 <h3>Kirim</h3>
-                <p>Pul: <span id="inMoney">0</span> so‘m</p>
+                <p>Pul: <span id="inMoney">{{in|intcomma}}</span> so‘m</p>
                 <p>Mahsulot: <span id="inQty">0</span> dona</p>
             </div>
             <div class="total-card out">
                 <h3>Chiqim</h3>
-                <p>Pul: <span id="outMoney">0</span> so‘m</p>
+                <p>Pul: <span id="outMoney">{{out|intcomma}}</span> so‘m</p>
                 <p>Mahsulot: <span id="outQty">0</span> dona</p>
             </div>
             <div class="total-card balance">
-                <h3>Balans</h3>
-                <p><span id="balance">0</span> so‘m</p>
+                <h3>Foida</h3>
+                <p><span id="balance">{{income|intcomma}}</span> so‘m</p>
             </div>
         </div>
 
