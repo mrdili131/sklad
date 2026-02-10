@@ -67,23 +67,23 @@ class ReportView(LoginRequiredMixin,View):
         products_all = Product.objects.filter(filial=request.user.filial,is_available=True)
         filtered_products = products_all.filter(created_at__range=(start_date_valid,end_date_valid))
 
-        income = 0
+        balance = 0
         spending = 0
         profit = 0
 
         for i in filtered_products:
-            income +=float(i.in_price) * i.quantity
+            balance += float(i.in_price) * i.quantity
 
         for order in orders:
             for i in order.items.all():
-                spending += i.product.in_price * i.quantity
-                profit += float(i.sold_price) - (float(i.product.in_price) * float(i.product.quantity))
+                spending += i.sold_price
+                profit += float(i.sold_price) - (float(i.product.in_price) * float(i.quantity))
         data = {
-            "income":income,
+            "balance":balance,
             "spending":spending,
             "profit":profit,
 
             "start_date":start_date,
-            "end_date":end_date
+            "end_date":end_date,
         }
         return render(request,'report.html',context=data)
