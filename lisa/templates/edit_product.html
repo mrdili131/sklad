@@ -100,6 +100,9 @@ h1{margin-bottom:20px}
             <label>Mahsulot nomi</label>
             <input type="text" name="name" value="{{ product.name }}" required>
 
+            <label>Kirim narxi</label>
+            <input type="number" name="in_price" value="{{ product.in_price }}" readonly>
+
             <label>Narxi</label>
             <input type="number" name="price" value="{{ product.price }}" required>
 
@@ -112,8 +115,9 @@ h1{margin-bottom:20px}
             <select name="p_type" required>
                 <option value="">Tanlang</option>
                 <option value="dona" {% if product.p_type == "dona" %}selected{% endif %}>Dona</option>
-                <option value="kg" {% if product.p_type == "kg" %}selected{% endif %}>Kg</option>
+                <option value="kilo" {% if product.p_type == "kilo" %}selected{% endif %}>Kg</option>
                 <option value="litr" {% if product.p_type == "litr" %}selected{% endif %}>Litr</option>
+                <option value="litr" {% if product.p_type == "metr" %}selected{% endif %}>Metr</option>
             </select>
 
             <label>Izoh</label>

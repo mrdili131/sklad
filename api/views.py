@@ -29,7 +29,9 @@ class ProductDetailAPI(APIView):
         product = self.get_object(id)
         if not product:
             return Response({"msg":"Could not find the product","status":False})
-        product.delete()
+        product.quantity = 0
+        product.is_available = False
+        product.save()
         return Response({"msg":"Deleted successfully"})
     
 

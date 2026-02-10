@@ -52,6 +52,8 @@ class Cart:
             total_price += product.price * int(value["quantity"])
             sold_price += float(value["total_price"])
             product.quantity -= int(value["quantity"])
+            if product.quantity == 0:
+                product.is_available = False
             product.save()
             
         order.total_price = total_price

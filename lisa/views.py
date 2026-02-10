@@ -17,7 +17,7 @@ class IndexView(LoginRequiredMixin,View):
         if form.is_valid():
             product = form.save(commit=False)
             product.filial = request.user.filial
-            product.income = float(form.cleaned_data["price"])/100*float(form.cleaned_data["interest"])
+            product.in_price = float(form.cleaned_data["price"])
             product.price = float(form.cleaned_data["price"])+(float(form.cleaned_data["price"])/100*int(form.cleaned_data["interest"]))
             product.save()
             return redirect('home')
@@ -42,6 +42,7 @@ class ProductView(LoginRequiredMixin,View):
     def post(self,request,id):
         product = Product.objects.get(id=id)
         form = ProductForm(request.POST,instance=product)
+        print(form.errors)
         if form.is_valid():
             form.save()
             return redirect('products')
@@ -66,31 +67,23 @@ class ReportView(LoginRequiredMixin,View):
         products_all = Product.objects.filter(filial=request.user.filial,is_available=True)
         filtered_products = products_all.filter(created_at__range=(start_date_valid,end_date_valid))
 
+        income = 0
+        spending = 0
+        profit = 0
 
-        kirim = 0
-        chiqim = 0
-        foida = 0
-
-        product_in = 0
-        product_out = 0
-
-
-        for prod in filtered_products:
-            kirim += prod.price * int(prod.quantity)
+        for i in filtered_products:
+            income +=float(i.in_price) * i.quantity
 
         for order in orders:
             for i in order.items.all():
-                chiqim += i.product.price * i.quantity
-                foida += (i.sold_price - i.total_price)+i.product.income
-
-
+                spending += i.product.in_price * i.quantity
+                profit += float(i.sold_price) - (float(i.product.in_price) * float(i.product.quantity))
         data = {
-            "out":chiqim,
-            "in":kirim,
-            "income":foida,
+            "income":income,
+            "spending":spending,
+            "profit":profit,
 
             "start_date":start_date,
             "end_date":end_date
         }
-
         return render(request,'report.html',context=data)
