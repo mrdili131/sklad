@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .serializers import ProductsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from lisa.models import Product
+from lisa.models import Product, Order, OrderItem
 from .cart import Cart
 
 class ProductsAPI(APIView):
@@ -65,4 +65,11 @@ class ToOrderAPI(APIView):
             return Response({"msg":"Select items first","status":False})
         cart.order()
         return Response({"msg":"Success","status":True})
-        
+    
+class OrdersListAPI(APIView):
+    def get(self,request):
+        data = {}
+        orders = Order.objects.filter()
+        # for order in orders:
+            # for i in order.items.all():
+        return Response({"status":True})
