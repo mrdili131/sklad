@@ -22,11 +22,13 @@
         <div class="card">
             <div class="info-row">
                 <div><b>Sana:</b> {{order.created_at}}</div>
-                <div class="status paid">To‘langan</div>
-            </div>
-            <div class="info-row">
-                <div><b>Mijoz:</b> {{order.customer}}</div>
-                <div><b>Telefon:</b> {{order.phone}}</div>
+                {% if order.status == 'sotilgan' %}
+                    <div class="status paid">To‘langan</div>
+                    <button onclick="revert_order()">Qaytarish</button>
+                {% else %}
+                    <div class="status returned">Qaytarilgan</div>
+                    <button onclick="revert_order()" disabled style="background-color: #a74141;">Qaytarish</button>
+                {% endif %}
             </div>
         </div>
 
@@ -155,6 +157,10 @@ h1{
     color:#16a34a
 }
 
+.status.returned{
+    background:#dadadaa3;
+    color:#3f3f3f
+}
 /* ================= TABLE ================= */
 table{
     width:100%;
@@ -182,7 +188,7 @@ tr:hover{
     font-size:18px;
     font-weight:700
 }
-
+button{padding:10px 18px;border-radius:10px;border:none;cursor:pointer;background:#eb2525;color:white}
 /* ================= PRINT ================= */
 @media print{
     .sidebar{display:none}
@@ -246,6 +252,26 @@ tr:hover{
     tbody td:nth-child(4)::before{content:"Jami";}
 }
 </style>
-
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 </body>
 </html>
+
+<script>
+
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+async function revert_order(){
+    await fetch(`/api/order-revert/`,
+    {
+        method:"DELETE",
+        headers:{
+            "Content-Type": "application/json",
+            'X-CSRFToken': csrftoken,
+        },
+        body:JSON.stringify({
+            uuid:"{{order.uuid}}"
+        }),
+    });
+    window.location.reload()
+}
+</script>

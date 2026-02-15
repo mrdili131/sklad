@@ -73,3 +73,16 @@ class OrdersListAPI(APIView):
         # for order in orders:
             # for i in order.items.all():
         return Response({"status":True})
+    
+class RevertOrderAPI(APIView):
+    def delete(self,request):
+        id = str(request.data.get("uuid"))
+        order = Order.objects.get(uuid=id)
+        for i in order.items.all():
+            prod = Product.objects.get(id=i.product.id)
+            prod.quantity += i.quantity
+            prod.save()
+            OrderItem.objects.get(id=i.id).delete()
+        order.status = "qaytarilgan"
+        order.save()
+        return Response({"status":True,"msg":"Deleted successfully"})

@@ -20,6 +20,7 @@ class IndexView(LoginRequiredMixin,View):
             product.in_price = float(form.cleaned_data["price"])
             product.price = float(form.cleaned_data["price"])+(float(form.cleaned_data["price"])/100*int(form.cleaned_data["interest"]))
             product.save()
+            print("[LOGGER] New product creation is delected")
             return redirect('home')
         return render(request,'index.html',{"form":form})
     
@@ -44,6 +45,7 @@ class ProductView(LoginRequiredMixin,View):
         form = ProductForm(request.POST,instance=product)
         print(form.errors)
         if form.is_valid():
+            print("[LOGGER] Are you an editor now ?")
             form.save()
             return redirect('products')
         else:
@@ -63,7 +65,7 @@ class ReportView(LoginRequiredMixin,View):
             start_date_valid = timezone.now().date()
             end_date_valid = timezone.now().date()
 
-        orders = Order.objects.filter(created_at__range=(start_date_valid,end_date_valid))
+        orders = Order.objects.filter(created_at__range=(start_date_valid,end_date_valid)).order_by("-id")
         products_all = Product.objects.filter(filial=request.user.filial,is_available=True)
         filtered_products = products_all.filter(created_at__range=(start_date_valid,end_date_valid))
 
@@ -94,6 +96,7 @@ class ReportView(LoginRequiredMixin,View):
         return render(request,'report.html',context=data)
     
 
-class OrderView(View):
+class OrderView(LoginRequiredMixin,View):
     def get(self,request,id):
-        return render(request,'inside_order.html')
+        order = Order.objects.get(uuid=id)
+        return render(request,'inside_order.html',{"order":order})

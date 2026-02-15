@@ -59,7 +59,7 @@
 
         <!-- REPORT -->
         <div class="card report">
-            <h3>Batafsil ro‘yxat</h3>
+            <h3>Zakazlar ro‘yxat</h3>
             <table>
                 <thead>
                     <tr>
@@ -73,11 +73,15 @@
                 <tbody id="reportBody">
                     {% for i in orders %}
                     <tr>
-                        <td><a href="">{{i.uuid}}</a></td>
+                        <td><a href="{% url 'order_item' i.uuid %}">{{i.uuid}}</a></td>
                         <td>{{i.created_at}}</td>
                         <td>{{i.items.count}}</td>
                         <td>{{i.sold_price|intcomma}} so‘m</td>
-                        <td class="in">To‘langan</td>
+                        {% if i.status == 'sotilgan' %}
+                            <td class="in">To‘langan</td>
+                        {% else %}
+                            <td class="out">Qaytarilgan</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

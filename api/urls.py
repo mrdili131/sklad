@@ -8,4 +8,5 @@ urlpatterns = [
     path('cart/',views.CartAPI.as_view()),
     path('order/',views.ToOrderAPI.as_view()),
     path('orders-list/',views.OrdersListAPI.as_view()),
+    path('order-revert/',views.RevertOrderAPI.as_view())
 ]
